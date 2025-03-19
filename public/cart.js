@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartItemsContainer = document.getElementById("cart-items");
     let totalPriceElement = document.getElementById("total-price");
-    let checkoutButton = document.getElementById("checkout-button");
+    let checkoutButton = document.querySelector(".checkout-btn"); // ✅ Fixed button selector
 
     function updateCartUI() {
         cartItemsContainer.innerHTML = "";
@@ -89,17 +89,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-            fetch("http://127.0.0.1:8000/api/orders", {  // ✅ Correct API URL
+            let orderData = {
+                customer_name: customerName,
+                customer_email: customerEmail,
+                customer_address: customerAddress,
+                payment_method: paymentMethod,
+                items: cart,
+                total_price: totalPrice
+            };
+
+            console.log("Sending order:", JSON.stringify(orderData)); // ✅ Debugging
+
+            fetch("http://127.0.0.1:8000/api/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    customer_name: customerName,
-                    customer_email: customerEmail,
-                    customer_address: customerAddress,
-                    payment_method: paymentMethod,
-                    items: cart,
-                    total_price: totalPrice
-                })
+                body: JSON.stringify(orderData)
             })
             .then(response => response.json())
             .then(data => {
