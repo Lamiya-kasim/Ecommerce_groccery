@@ -19,9 +19,14 @@ class Order extends Model
         'total_price',
     ];
 
-    public function orderItems()
+  /*  public function orderItems()
     {
-        return $this->hasMany(OrderItem::class, 'order_id');
-    }
+        return $this->hasMany(OrderItem::class, 'order_id','id');
+    }*/
+    public function orderItems()
+{
+    return $this->hasMany(OrderItem::class);
+}
+
 }
 

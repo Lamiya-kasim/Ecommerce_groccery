@@ -44,6 +44,17 @@
         tr:hover {
             background: #ddd;
         }
+        .cancel-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .cancel-btn:hover {
+            background: darkred;
+        }
         .error {
             color: red;
             font-weight: bold;
@@ -63,7 +74,7 @@
                     <th>Payment Method</th>
                     <th>Items</th>
                     <th>Total Price</th>
-                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="orders-list">
@@ -78,34 +89,38 @@
         });
 
         function fetchOrders() {
-            fetch("http://127.0.0.1:8000/api/orders") // Update to your Laravel API route
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
+            fetch("http://127.0.0.1:8000/api/orders") // Laravel API route
+                .then(response => response.json())
                 .then(data => {
                     let ordersList = document.getElementById("orders-list");
                     ordersList.innerHTML = ""; // Clear previous data
 
-                    if (data.length === 0) {
+                    if (!data || data.length === 0) {
                         ordersList.innerHTML = "<tr><td colspan='8' class='error'>No orders found</td></tr>";
                         return;
                     }
 
                     data.forEach(order => {
+                        let orderedItems = order.order_items && order.order_items.length 
+                            ? order.order_items.map(item => `${item.product_name} (${item.quantity})`).join(", ")
+                            : "No items"; // Handle empty items
+
                         let row = document.createElement("tr");
+                        row.id = `order-${order.id}`; // Unique row ID
+
                         row.innerHTML = `
                             <td>${order.id}</td>
                             <td>${order.customer_name}</td>
-                            <td>${order.customer_email}</td> <!-- Ensure API returns 'customer_email' -->
-                            <td>${order.customer_address}</td> <!-- Ensure API returns 'customer_address' -->
+                            <td>${order.customer_email}</td>
+                            <td>${order.customer_address}</td>
                             <td>${order.payment_method}</td>
-                            <td>${order.items ? order.items : "No items listed"}</td> <!-- Handle missing items -->
-                            <td>$${parseFloat(order.total_price).toFixed(2)}</td> <!-- Format price -->
-                            <td>${order.status}</td>
+                            <td>${orderedItems}</td>
+                            <td>$${parseFloat(order.total_price).toFixed(2)}</td>
+                            <td>
+                                <button class="cancel-btn" onclick="cancelOrder(${order.id})">Cancel Order</button>
+                            </td>
                         `;
+
                         ordersList.appendChild(row);
                     });
                 })
@@ -114,8 +129,35 @@
                     document.getElementById("orders-list").innerHTML = "<tr><td colspan='8' class='error'>Failed to load orders</td></tr>";
                 });
         }
+
+        function cancelOrder(orderId) {
+            if (!confirm("Are you sure you want to cancel this order?")) {
+                return;
+            }
+
+            fetch(`http://127.0.0.1:8000/api/orders/${orderId}`, { 
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`order-${orderId}`).remove(); // Remove from UI
+                    alert("Order cancelled successfully!");
+                } else {
+                    alert("Failed to cancel order!");
+                }
+            })
+            .catch(error => {
+                console.error("Error cancelling order:", error);
+                alert("An error occurred while cancelling the order.");
+            });
+        }
     </script>
 </body>
 </html>
+
 
 

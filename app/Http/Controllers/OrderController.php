@@ -12,13 +12,21 @@ class OrderController extends Controller
     // Fetch all orders with their items
     public function index()
     {
-        return response()->json(Order::with('orderItems')->get(), 200, [], JSON_PRETTY_PRINT);
+        $orders = Order::with('orderItems')->get();
+    
+        // Modify status to always return "Shipped"
+       
+    
+        return response()->json($orders, 200, [], JSON_PRETTY_PRINT);
     }
+    
 
     // Store new order
     public function store(Request $request)
     {
         Log::info('Incoming Order Request:', $request->all()); // Log request for debugging
+        Log::info('Saving Order Items:', $request->items);
+
 
         try {
             // Validate the request
@@ -66,7 +74,21 @@ class OrderController extends Controller
             return response()->json(['message' => 'Order placed successfully!', 'order' => $order], 201);
         } catch (\Exception $e) {
             Log::error('Order Processing Error: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to place order!'], 500);
+            return response()->json(['error' => 'order errorl!'], 500);
         }
+    
+}
+
+    public function destroy($id)
+{
+    $order = Order::find($id);
+
+    if (!$order) {
+        return response()->json(['success' => false, 'message' => 'Order not found'], 404);
     }
+
+    $order->delete(); // Delete the order
+
+    return response()->json(['success' => true, 'message' => 'Order cancelled successfully']);
+}
 }

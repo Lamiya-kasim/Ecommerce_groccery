@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\OrderController;
 
+use App\Models\Order;
+
+
 
 
 
@@ -43,3 +46,11 @@ Route::get('/orders', [OrderController::class, 'index']);
 Route::post('/checkout', [OrderController::class, 'store']);
 
 Route::post('/orders', [OrderController::class, 'store']);
+
+//Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
+Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+
+
+
+
+
