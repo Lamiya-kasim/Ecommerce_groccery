@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 class OrderController extends Controller
 {
@@ -58,7 +60,7 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'product_name' => $item['name'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price'],
+                    'product_price' => $item['price'],
                     'img' => $item['img'],
                     'created_at' => now(),
                     'updated_at' => now()

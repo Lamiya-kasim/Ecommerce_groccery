@@ -225,67 +225,62 @@
 
 
 
-    <script>
-        let products = [
-            {id: 1, name: "Apple", price: 2.99, img: "images/apple.jpg"},
-            {id: 2, name: "Banana", price: 1.49, img: "images/banana.jpg"},
-            {id: 3, name: "Milk", price: 3.49, img: "images/milk.jpg"},
-            {id: 4, name: "Eggs", price: 4.99, img: "images/eggs.jpg"},
-            {id: 5, name: "Bread", price: 2.49, img: "images/bread.jpg"},
-            {id: 6, name: "Tomato", price: 1.89, img: "images/tomato.jpg"},
-            {id: 7, name: "Potato", price: 6.99, img: "images/potato.jpg"},
-            {id: 8, name: "Cheese", price: 5.49, img: "images/cheese.jpg"},
-            {id: 9, name: "Chicken", price: 12.99, img: "images/chicken.jpg"},
-            {id: 10, name: "Rice", price: 11.49, img: "images/rice.jpg"},
-            {id: 11, name: "Grapes", price: 4.0, img: "images/grapes.jpg"},
-            {id: 12, name: "Kale", price: 3.99, img: "images/kale.jpg"},
-            {id: 13, name: "Mango", price: 4.67, img: "images/Mango.jpg"},
-            {id: 14, name: "Meat", price: 6.0, img: "images/meat.jpg"},
-            {id: 15, name: "Oats", price: 10.0, img: "images/Oats.jpg"},
-            {id: 16, name: "Sardine", price: 5.65, img: "images/sardine.jpg"},
-            {id: 17, name: "Strawberry", price: 2.45, img: "images/strawberry.jpg"},
-            {id: 18, name: "Yougurt", price: 4.0, img: "images/yougurt.jpg"}
-        ];
+<script>
+    async function fetchProducts() {
+        try {
+            let response = await fetch('http://127.0.0.1:8000/api/products');
+            let products = await response.json();
+            displayProducts(products);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
 
-        function updateCartCount() {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            document.getElementById("cart-count").textContent = cart.length;
+    function displayProducts(products) {
+        let container = document.getElementById("products-container");
+        container.innerHTML = products.map(p => `
+            <div class="product" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">
+                <img src="${p.image}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p>Price: $${p.price}</p>
+                <button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+            </div>
+        `).join('');
+    }
+
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        document.getElementById("cart-count").textContent = cart.length;
+    }
+
+    function addToCart(id) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Find product details directly from the DOM
+        let productElement = document.querySelector(`.product[data-id="${id}"]`);
+        if (!productElement) return;
+
+        let name = productElement.getAttribute("data-name");
+        let price = parseFloat(productElement.getAttribute("data-price"));
+        let image = productElement.getAttribute("data-image");
+
+        let existing = cart.find(item => item.id === id);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({ id, name, price, image, quantity: 1 });
         }
 
-        function addToCart(id) {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let product = products.find(p => p.id === id);
-    
-            let existing = cart.find(item => item.id === id);
-            if (existing) {
-                existing.quantity += 1;
-            } else {
-                product.quantity = 1;
-                cart.push(product);
-            }
-    
-            localStorage.setItem("cart", JSON.stringify(cart));
-            alert(product.name + " added to cart!");
-            updateCartCount();
-        }
-
-        function displayProducts() {
-            let container = document.getElementById("products-container");
-            container.innerHTML = products.map(p => `
-                <div class="product">
-                    <img src="${p.img}" alt="${p.name}">
-                    <h3>${p.name}</h3>
-                    <p>Price: $${p.price}</p>
-                    <button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>
-                </div>
-            `).join('');
-        }
-        // Logout function
-
-
-        displayProducts();
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(name + " added to cart!");
         updateCartCount();
-    </script>
+    }
+
+    fetchProducts();
+    updateCartCount();
+</script>
+
+
 </body>
 </html>
 

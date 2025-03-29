@@ -2,11 +2,10 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\OrderController;
+use App\Models\Orders;
 
-use App\Models\Order;
 
 
 
@@ -42,13 +41,19 @@ Route::middleware('auth:api')->group(function () {
 Route::middleware('auth:api')->get('/profile', [AuthController::class, 'profile']);
 
 Route::get('/orders', [OrderController::class, 'index']);
-
-Route::post('/checkout', [OrderController::class, 'store']);
-
 Route::post('/orders', [OrderController::class, 'store']);
 
 //Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::delete('/orders/{id}', [OrderController::class, 'destroy']);
+
+//Route::middleware('auth:api')->post('/orders', [OrderController::class, 'store']);
+
+
+
+use App\Http\Controllers\API\ProductController;
+
+Route::get('/products', [ProductController::class, 'index']);
+
 
 
 

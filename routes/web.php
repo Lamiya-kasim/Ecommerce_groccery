@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+use App\Models\Product;
+use Illuminate\Http\Request;
+
+Route::get('/products', function () {
+    return response()->json(Product::all());
+});
