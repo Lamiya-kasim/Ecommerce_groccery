@@ -186,7 +186,7 @@
 
     <!-- Products Section -->
     <div class="products-section">
-        <h2>Available Products</h2>
+        <h2> YOUSTORE</h2>
         <div class="products" id="products-container">
             <!-- Products will be dynamically inserted here -->
         </div>
@@ -278,6 +278,29 @@
 
     fetchProducts();
     updateCartCount();
+
+
+    //display products
+    document.addEventListener("DOMContentLoaded", async function () {
+    let response = await fetch("http://127.0.0.1:8000/api/products");
+    let products = await response.json();
+
+    let productContainer = document.querySelector(".product-container"); // Update according to your structure
+    productContainer.innerHTML = ""; // Clear existing products
+
+    products.forEach((product) => {
+        let productHTML = `
+            <div class="product-card">
+              <img src="storage/products/${product.image}" alt="${product.name}" class="product-img">
+                <h3>${product.name}</h3>
+                <p>Price: $${product.price}</p>
+                <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
+            </div>
+        `;
+        productContainer.innerHTML += productHTML;
+    });
+});
+
 </script>
 
 

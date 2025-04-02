@@ -56,6 +56,20 @@ Route::get('/products', [ProductController::class, 'index']);
 
 
 
+Route::post('/admin/login', [App\Http\Controllers\API\AuthController::class, 'adminLogin']);
+
+
+Route::middleware(['auth:api', 'admin'])->group(function () {
+    Route::post('/admin/products', [ProductController::class, 'store']); // Example admin route
+    Route::delete('/admin/products/{id}', [ProductController::class, 'destroy']);
+});
+Route::middleware('auth:api')->delete('/products/{id}', [ProductController::class, 'destroy']);
+
+Route::post('/products', [ProductController::class, 'store']); 
+Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+
+
+
 
 
 

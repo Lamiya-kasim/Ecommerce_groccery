@@ -44,11 +44,39 @@ class AuthController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
-    public function profile()
-{
-    return response()->json([
-        'user' => auth()->user(),
-    ]);
-}
 
+    public function profile()
+    {
+        return response()->json([
+            'user' => auth()->user(),
+        ]);
+    }
+
+    // Admin Login
+    public function adminLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+
+        // Check if the user is an admin
+        $admin = User::where('email', $request->email)->where('is_admin', 1)->first();
+
+        if (!$admin || !Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return response()->json(['error' => 'Invalid admin credentials'], 401);
+        }
+
+        // Create a Passport token for the admin
+        $token = $admin->createToken('AdminToken')->accessToken;
+
+        return response()->json([
+            'message' => 'Admin login successful',
+            'token' => $token
+        ]);
+    }
 }
