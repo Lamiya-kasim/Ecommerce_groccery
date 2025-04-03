@@ -8,28 +8,41 @@ use App\Models\OrderItem;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
-
 class OrderController extends Controller
 {
-    // Fetch all orders with their items
     public function index()
-    {
-        $orders = Order::with('orderItems')->get();
-    
-        // Modify status to always return "Shipped"
-       
-    
-        return response()->json($orders, 200, [], JSON_PRETTY_PRINT);
-    }
-    
+{
+    try {
+        $orders = Order::with('orderItems')->get()->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'customer_name' => $order->customer_name,
+                'customer_email' => $order->customer_email,
+                'customer_address' => $order->customer_address,
+                'payment_method' => $order->payment_method,
+                'total_price' => $order->total_price,
+                'items' => $order->orderItems->map(function ($item) {
+                    return [
+                        'product_name' => $item->product_name,
+                        'quantity' => $item->quantity
+                    ];
+                })
+            ];
+        });
 
-    // Store new order
+        return response()->json(['orders' => $orders], 200);
+    } catch (\Exception $e) {
+        \Log::error('Error fetching orders: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to fetch orders'], 500);
+    }
+}
+
+    
+    // Fetch all orders with their items
     public function store(Request $request)
     {
-        Log::info('Incoming Order Request:', $request->all()); // Log request for debugging
-        Log::info('Saving Order Items:', $request->items);
-
-
+        Log::info('Incoming Order Request:', $request->all());
+    
         try {
             // Validate the request
             $request->validate([
@@ -41,9 +54,10 @@ class OrderController extends Controller
                 'items.*.name' => 'required|string',
                 'items.*.price' => 'required|numeric',
                 'items.*.quantity' => 'required|integer|min:1',
+                'items.*.img' => 'nullable|string',
                 'total_price' => 'required|numeric'
             ]);
-
+    
             // Create order
             $order = Order::create([
                 'customer_name' => $request->customer_name,
@@ -52,45 +66,48 @@ class OrderController extends Controller
                 'payment_method' => $request->payment_method,
                 'total_price' => $request->total_price
             ]);
-
+    
             // Add order items
             $orderItems = [];
             foreach ($request->items as $item) {
                 $orderItems[] = [
                     'order_id' => $order->id,
                     'product_name' => $item['name'],
-                    'quantity' => $item['quantity'],
                     'product_price' => $item['price'],
-                    'img' => $item['img'],
+                    'price' => $item['price'], // ✅ Ensure price is added
+                    'quantity' => $item['quantity'],
+                    'img' => $item['img'] ?? null,
                     'created_at' => now(),
                     'updated_at' => now()
                 ];
             }
-
-            // Bulk insert items
+    
+            // Bulk insert order items
             OrderItem::insert($orderItems);
-
+    
             // Fetch the order with items
             $order->load('orderItems');
-
+    
             return response()->json(['message' => 'Order placed successfully!', 'order' => $order], 201);
         } catch (\Exception $e) {
             Log::error('Order Processing Error: ' . $e->getMessage());
-            return response()->json(['error' => 'order errorl!'], 500);
+            return response()->json(['error' => 'Order processing failed!', 'details' => $e->getMessage()], 500);
         }
-    
-}
-
-    public function destroy($id)
-{
-    $order = Order::find($id);
-
-    if (!$order) {
-        return response()->json(['success' => false, 'message' => 'Order not found'], 404);
     }
+    
+    
+    // Cancel an order
+    public function destroy($id)
+    {
+        $order = Order::find($id);
 
-    $order->delete(); // Delete the order
+        if (!$order) {
+            return response()->json(['success' => false, 'message' => 'Order not found'], 404);
+        }
 
-    return response()->json(['success' => true, 'message' => 'Order cancelled successfully']);
+        $order->delete(); // Delete the order
+
+        return response()->json(['success' => true, 'message' => 'Order cancelled successfully']);
+    }
 }
-}
+

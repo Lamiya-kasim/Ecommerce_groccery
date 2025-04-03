@@ -90,20 +90,27 @@
 
         function fetchOrders() {
             fetch("http://127.0.0.1:8000/api/orders") // Laravel API route
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     let ordersList = document.getElementById("orders-list");
                     ordersList.innerHTML = ""; // Clear previous data
 
-                    if (!data || data.length === 0) {
+                    // Check if data.orders exists and is not empty
+                    if (!data.orders || data.orders.length === 0) {
                         ordersList.innerHTML = "<tr><td colspan='8' class='error'>No orders found</td></tr>";
                         return;
                     }
 
-                    data.forEach(order => {
-                        let orderedItems = order.order_items && order.order_items.length 
-                            ? order.order_items.map(item => `${item.product_name} (${item.quantity})`).join(", ")
-                            : "No items"; // Handle empty items
+                    data.orders.forEach(order => {
+                        let orderedItems = order.items && order.items.length 
+    ? order.items.map(item => `${item.product_name} (${item.quantity})`).join(", ")
+    : "No items";
+
 
                         let row = document.createElement("tr");
                         row.id = `order-${order.id}`; // Unique row ID

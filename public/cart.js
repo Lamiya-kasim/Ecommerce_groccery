@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("Order placed successfully!");
                     localStorage.removeItem("cart");
                     updateCartUI();
-                    window.location.href = "vieworders.html";
+                    window.location.href = "orders.html";
                 } else {
                     alert("Checkout failed: " + (data.message || "Unknown error"));
                 }

@@ -170,7 +170,6 @@
         <div class="navbar">
             <div class="nav-links">
                 <a href="dashboard.html">Home</a>
-                <a href="products.html">Products</a>
                 <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
             </div>
 
@@ -235,6 +234,51 @@
             console.error('Error fetching products:', error);
         }
     }
+    function displayProducts(products) {
+        let container = document.getElementById("products-container");
+        container.innerHTML = products.map(p => `
+            <div class="product" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-image="${p.image}">
+                <img src="${p.image}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p>Price: $${p.price}</p>
+                <button class="add-to-cart" onclick="addToCart(${p.id})">Add to Cart</button>
+            </div>
+        `).join('');
+    }
+
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        document.getElementById("cart-count").textContent = cart.length;
+    }
+
+    function addToCart(id) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Find product details directly from the DOM
+        let productElement = document.querySelector(`.product[data-id="${id}"]`);
+        if (!productElement) return;
+
+        let name = productElement.getAttribute("data-name");
+        let price = parseFloat(productElement.getAttribute("data-price"));
+        let image = productElement.getAttribute("data-image");
+
+        let existing = cart.find(item => item.id === id);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push({ id, name, price, image, quantity: 1 });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        alert(name + " added to cart!");
+        updateCartCount();
+    }
+
+    // Initialize the page
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchProducts();
+        updateCartCount();
+    });
 
     function displayProducts(products) {
         let container = document.getElementById("products-container");
