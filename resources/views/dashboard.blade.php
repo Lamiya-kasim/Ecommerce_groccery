@@ -174,7 +174,7 @@
             </div>
 
             <div class="user-account">
-                <a href="orders.html">View Orders</a>
+            <a href="{{ url('/orders') }}">View Orders</a>
                 <a href="#" id="logoutButton">Logout</a>
             </div>
         </div>
@@ -199,10 +199,11 @@
                 <p>We provide the freshest grocery items at the best prices. Quality guaranteed!</p>
             </div>
             <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="about.html">About Us</a>
-                <a href="contact.html">Contact Us</a>
-                <a href="privacy.html">Privacy Policy</a>
+
+                <a href="{{ url('/about') }}">About</a>
+<a href="{{ url('/contact') }}">Contact</a>
+<a href="{{ url('/privacy') }}">Privacy Policy</a>
+
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>
@@ -349,9 +350,3 @@
 
 </body>
 </html>
-
- 
-
-
-
-

@@ -68,7 +68,8 @@
             .then(data => {
                 if (data.token) {
                     localStorage.setItem("adminToken", data.token);
-                    window.location.href = "admin.html"; // Redirect to admin panel
+                    window.location.href = "/admin";
+// Redirect to admin panel
                 } else {
                     document.getElementById("error-msg").innerText = data.error;
                 }
