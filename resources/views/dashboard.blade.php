@@ -170,7 +170,8 @@
         <div class="navbar">
             <div class="nav-links">
                 <a href="dashboard.html">Home</a>
-                <a href="cart.html">Cart (<span id="cart-count">0</span>)</a>
+                <a href="/cart">Cart (<span id="cart-count">0</span>)</a>
+
             </div>
 
             <div class="user-account">
@@ -219,7 +220,7 @@
 
     <!-- FontAwesome Icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
+//fetch thidngne
 <script>
     async function fetchProducts() {
         try {
@@ -294,27 +295,31 @@
     }
 
     function addToCart(id) {
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-        // Find product details directly from the DOM
-        let productElement = document.querySelector(`.product[data-id="${id}"]`);
-        if (!productElement) return;
+    // Get product details from DOM
+    let productElement = document.querySelector(`.product[data-id="${id}"]`);
+    if (!productElement) return;
 
-        let name = productElement.getAttribute("data-name");
-        let price = parseFloat(productElement.getAttribute("data-price"));
-        let image = productElement.getAttribute("data-image");
+    let name = productElement.getAttribute("data-name");
+    let price = parseFloat(productElement.getAttribute("data-price"));
+    let image = productElement.getAttribute("data-image");
 
-        let existing = cart.find(item => item.id === id);
-        if (existing) {
-            existing.quantity += 1;
-        } else {
-            cart.push({ id, name, price, image, quantity: 1 });
-        }
-
-        localStorage.setItem("cart", JSON.stringify(cart));
-        alert(name + " added to cart!");
-        updateCartCount();
+    let existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ id, name, price, image, quantity: 1 });
     }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    updateCartCount();
+
+    // No alert, no redirect – clean and silent
+    console.log(`${name} added to cart.`);
+}
+
+
 
     fetchProducts();
     updateCartCount();

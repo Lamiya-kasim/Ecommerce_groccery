@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartItemsContainer = document.getElementById("cart-items");
     let totalPriceElement = document.getElementById("total-price");
-    let checkoutButton = document.querySelector(".checkout-btn"); // ✅ Fixed button selector
+    let checkoutButton = document.querySelector(".checkout-btn");
 
     function updateCartUI() {
         cartItemsContainer.innerHTML = "";
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (isNaN(newQty) || newQty < 1) {
                     alert("Quantity must be at least 1!");
-                    this.value = cart[index].quantity; // Reset to previous value
+                    this.value = cart[index].quantity;
                     return;
                 }
 
@@ -60,17 +60,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (checkoutButton) {
         checkoutButton.addEventListener("click", function () {
-            console.log("Checkout button clicked! ✅");
-
             if (cart.length === 0) {
                 alert("Your cart is empty!");
                 return;
             }
 
-            let customerName = prompt("Enter your name:").trim();
-            let customerEmail = prompt("Enter your email:").trim();
-            let customerAddress = prompt("Enter your address:").trim();
-            let paymentMethod = prompt("Enter payment method (Cash/Card):").trim().toLowerCase();
+            let customerName = document.getElementById("customer-name").value.trim();
+            let customerEmail = document.getElementById("customer-email").value.trim();
+            let customerAddress = document.getElementById("customer-address").value.trim();
+            let paymentMethod = document.getElementById("payment-method").value;
 
             if (!customerName || !customerEmail || !customerAddress || !paymentMethod) {
                 alert("All fields are required!");
@@ -79,11 +77,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!/^\S+@\S+\.\S+$/.test(customerEmail)) {
                 alert("Please enter a valid email address!");
-                return;
-            }
-
-            if (!["cash", "card"].includes(paymentMethod)) {
-                alert("Invalid payment method! Choose 'Cash' or 'Card'.");
                 return;
             }
 
@@ -98,8 +91,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 total_price: totalPrice
             };
 
-            console.log("Sending order:", JSON.stringify(orderData)); // ✅ Debugging
-
             fetch("http://127.0.0.1:8000/api/orders", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -107,13 +98,12 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Checkout response:", data);
-
                 if (data.message === "Order placed successfully!") {
                     alert("Order placed successfully!");
                     localStorage.removeItem("cart");
                     updateCartUI();
-                    window.location.href = "orders.html";
+                    window.location.href = "/orders";
+
                 } else {
                     alert("Checkout failed: " + (data.message || "Unknown error"));
                 }
@@ -124,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     } else {
-        console.error("Checkout button not found! ❌ Check your HTML.");
+        console.error("Checkout button not found!");
     }
 });
 
