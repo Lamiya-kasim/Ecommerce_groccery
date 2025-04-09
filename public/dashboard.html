@@ -175,7 +175,7 @@
 
             <div class="user-account">
                 <a href="orders.html">View Orders</a>
-                <a href="#" id="logout">Logout</a>
+                <a href="#" id="logoutButton">Logout</a>
             </div>
         </div>
 
@@ -218,11 +218,6 @@
 
     <!-- FontAwesome Icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-</body>
-</html>
-
-
 
 <script>
     async function fetchProducts() {
@@ -344,6 +339,10 @@
         productContainer.innerHTML += productHTML;
     });
 });
+
+  document.getElementById('logoutButton').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
 
 </script>
 
