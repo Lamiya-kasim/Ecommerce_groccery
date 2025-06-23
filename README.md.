@@ -1,0 +1,87 @@
+Grocery E-Commerce Dashboard (Laravel Project)
+This is a simple grocery e-commerce project built using Laravel for the backend and basic HTML/CSS for the frontend. The app allows users to view grocery products, add them to a cart, place orders, and view order history. There's also an admin panel to manage products.
+
+🔧 Technologies Used
+PHP (Laravel Framework)
+
+MySQL (Database name: laravel)
+
+HTML, CSS (Frontend)
+
+RESTful API structure
+
+Laravel MVC + Service-Repository Pattern
+
+📦 Features
+✅ User Side
+View categorized products: Vegetables, Fruits, Meat & Fish, Others
+
+Add products to cart
+
+Place order (protected with token authentication)
+
+View and cancel previous orders
+
+User login/logout
+
+Cart icon with item count
+
+Footer with About & Contact sections
+
+✅ Admin Panel
+Admin login
+
+Add new product (name, price, image)
+
+Delete product
+
+View product list in table format
+
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── API/
+│   │   │   │   ├── ProductController.php
+│   │   │   │   ├── OrderController.php
+│   │   │   │   ├── AuthController.php
+│   │   │   │   └── AdminController.php
+│   │   └── Requests/
+│   │       └── StoreProductRequest.php
+│
+├── app/Models/
+│   ├── Product.php
+│   ├── Order.php
+│   └── User.php
+│
+├── app/Services/
+│   ├── ProductService.php
+│   ├── OrderService.php
+│   └── AdminService.php
+│
+├── app/Repositories/
+│   ├── ProductRepository.php
+│   ├── OrderRepository.php
+│   └── AdminRepository.php
+│
+├── routes/
+│   └── api.php
+│
+├── public/
+│   ├── dashboard.html
+│   ├── cart.html
+│   ├── admin.html
+│   ├── about.html
+│   └── contact.html
+
+🚀 Getting Started
+Clone the project
+
+Run composer install
+
+Set up .env file with database: DB_DATABASE=laravel
+
+Run php artisan migrate
+
+Start server: php artisan serve
+
+Access frontend via public/ HTML files
